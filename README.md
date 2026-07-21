@@ -23,4 +23,10 @@ Game matematika interaktif berbasis web dengan desain modern untuk melatih kecep
 ## 👩🏻‍💻 Dibuat Oleh
 * **Nama:** Putri Wulandari
 * **Sekolah:** SMKN 1 PEDAN
-* **Jurusan:** PPLG 
+* **Jurusan:** PPLG
+
+---
+
+## 📸 Tampilan Game
+![Tampilan Game 1](IMG_20260721_224855.jpg)
+![Tampilan Game 2](IMG_20260721_224854.jpg)
