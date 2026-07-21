@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Adventure - EUGNE</title>
+    <style>
+        :root {
+            --hot-pink: #ff4d8d;
+            --soft-pink: #ff85a2;
+            --pastel-pink: #fbb1bd;
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(45deg, #fbb1bd, #ff99ac, #ff4d8d);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            cursor: none; /* Kita gunakan kursor kustom */
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- Animasi Background (Partikel Melayang) --- */
+        .bg-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        .shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        /* --- Kursor Kustom --- */
+        #custom-cursor {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+        }
+
+        .cursor-trail {
+            width: 10px;
+            height: 10px;
+            background: var(--soft-pink);
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transition: transform 0.1s linear, opacity 0.4s;
+        }
+
+        /* --- Wadah Utama --- */
+        .game-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            padding: 2.5rem;
+            border-radius: 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 400px;
+            z-index: 10;
+            position: relative;
+            color: var(--white);
+        }
+
+        .hidden { display: none; }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .equation {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin: 1.5rem 0;
+            text-shadow: 3px 3px 0 var(--hot-pink);
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 15px;
+            border: none;
+            font-size: 1.5rem;
+            text-align: center;
+            outline: none;
+            color: var(--hot-pink);
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            background: var(--white);
+            color: var(--hot-pink);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin: 5px;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: var(--hot-pink);
+            color: var(--white);
+            transform: scale(1.05);
+        }
+
+        .btn-exit { background: transparent; color: white; border: 2px solid white; }
+
+        .lives { color: #ffeb3b; font-size: 1.2rem; }
+
+        footer {
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            opacity: 0.8;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="custom-cursor"></div>
+    <div class="bg-shapes" id="bg-shapes"></div>
+
+    <div id="start-screen" class="game-card">
+        <h1>Math Adventure</h1>
+        <p style="margin: 15px 0;">Selesaikan 5 soal per ronde.<br>Hati-hati, 5 kesalahan berarti Game Over!</p>
+        <button class="btn" onclick="startGame()">Mulai Permainan</button>
+        <footer>&copy; 2026 Developed by EUGNE</footer>
+    </div>
+
+    <div id="game-screen" class="game-card hidden">
+        <div class="stats">
+            <span>Ronde: <span id="round-val">1</span></span>
+            <span class="lives" id="lives-val">❤️❤️❤️❤️❤️</span>
+            <span>Skor: <span id="score-val">0</span></span>
+        </div>
+        <div id="question-count" style="font-size: 0.8rem; opacity: 0.9;">Soal ke 1/5</div>
+        <div class="equation" id="eq-text">0 + 0</div>
+        <input type="number" id="ans-input" placeholder="Jawaban?" autocomplete="off">
+        <div id="feedback" style="height: 20px; margin-bottom: 10px; font-weight: bold;"></div>
+        <button class="btn" onclick="checkAnswer()">Kirim</button>
+        <footer>&copy; 2026 Developed by EUGNE</footer>
+    </div>
+
+    <div id="result-screen" class="game-card hidden">
+        <h1 id="result-title">Game Over!</h1>
+        <div style="font-size: 1.5rem; margin: 20px 0;">
+            Total Skor: <span id="final-score">0</span><br>
+            Ronde Terakhir: <span id="final-round">1</span>
+        </div>
+        <button class="btn" onclick="startGame()">Memulai Permainan Kembali</button>
+        <button class="btn btn-exit" onclick="exitSession()">Akhiri Sesi</button>
+        <footer>&copy; 2026 Developed by EUGNE</footer>
+    </div>
+
+    <script>
+        // --- Game State ---
+        let state = {
+            score: 0,
+            round: 1,
+            questionInRound: 1,
+            lives: 5,
+            currentAns: 0
+        };
+
+        // --- Core Logic ---
+        function startGame() {
+            state = { score: 0, round: 1, questionInRound: 1, lives: 5, currentAns: 0 };
+            updateStats();
+            showScreen('game-screen');
+            generateQuestion();
+        }
+
+        function generateQuestion() {
+            const ops = ['+', '-', '*'];
+            const op = ops[Math.floor(Math.random() * (state.round > 2 ? 3 : 2))]; // Perkalian muncul di ronde 3+
+            let n1 = Math.floor(Math.random() * (10 * state.round)) + 2;
+            let n2 = Math.floor(Math.random() * (10 * state.round)) + 2;
+
+            if (op === '-' && n1 < n2) [n1, n2] = [n2, n1];
+            
+            state.currentAns = eval(`${n1} ${op} ${n2}`);
+            document.getElementById('eq-text').innerText = `${n1} ${op} ${n2}`;
+            document.getElementById('question-count').innerText = `Soal ke ${state.questionInRound}/5`;
+            document.getElementById('ans-input').value = '';
+            document.getElementById('ans-input').focus();
+        }
+
+        function checkAnswer() {
+            const userVal = parseInt(document.getElementById('ans-input').value);
+            const feedback = document.getElementById('feedback');
+
+            if (userVal === state.currentAns) {
+                state.score += 10 * state.round;
+                feedback.innerText = "Benar! ✨";
+                feedback.style.color = "#4caf50";
+            } else {
+                state.lives--;
+                feedback.innerText = "Salah! ❌";
+                feedback.style.color = "#f44336";
+            }
+
+            updateStats();
+
+            if (state.lives <= 0) {
+                endGame("Game Over!");
+                return;
+            }
+
+            state.questionInRound++;
+            if (state.questionInRound > 5) {
+                state.round++;
+                state.questionInRound = 1;
+                feedback.innerText = "Ronde Baru Dimulai! 🚀";
+            }
+
+            setTimeout(generateQuestion, 800);
+        }
+
+        function updateStats() {
+            document.getElementById('score-val').innerText = state.score;
+            document.getElementById('round-val').innerText = state.round;
+            document.getElementById('lives-val').innerText = "❤️".repeat(state.lives);
+        }
+
+        function showScreen(id) {
+            ['start-screen', 'game-screen', 'result-screen'].forEach(s => {
+                document.getElementById(s).classList.add('hidden');
+            });
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function endGame(title) {
+            document.getElementById('result-title').innerText = title;
+            document.getElementById('final-score').innerText = state.score;
+            document.getElementById('final-round').innerText = state.round;
+            showScreen('result-screen');
+        }
+
+        function exitSession() {
+            if(confirm("Apakah kamu ingin mengakhiri sesi?")) {
+                window.location.reload(); // Reset ke awal
+            }
+        }
+
+        // --- Visual Effects ---
+        // 1. Kursor
+        const cursor = document.getElementById('custom-cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            // Trail
+            const trail = document.createElement('div');
+            trail.className = 'cursor-trail';
+            trail.style.left = e.clientX + 'px';
+            trail.style.top = e.clientY + 'px';
+            document.body.appendChild(trail);
+            setTimeout(() => {
+                trail.style.opacity = '0';
+                trail.style.transform = 'scale(0.1)';
+                setTimeout(() => trail.remove(), 400);
+            }, 50);
+        });
+
+        // 2. Background Shapes
+        const shapesContainer = document.getElementById('bg-shapes');
+        for (let i = 0; i < 15; i++) {
+            const shape = document.createElement('div');
+            shape.className = 'shape';
+            const size = Math.random() * 80 + 20;
+            shape.style.width = `${size}px`;
+            shape.style.height = `${size}px`;
+            shape.style.left = `${Math.random() * 100}%`;
+            shape.style.animationDelay = `${Math.random() * 10}s`;
+            shape.style.animationDuration = `${Math.random() * 10 + 10}s`;
+            shapesContainer.appendChild(shape);
+        }
+
+        // Input enter listener
+        document.getElementById('ans-input').addEventListener('keypress', e => {
+            if (e.key === 'Enter') checkAnswer();
+        });
+    </script>
+</body>
+</html>
