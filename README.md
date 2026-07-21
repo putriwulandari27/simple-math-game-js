@@ -20,7 +20,7 @@ Game matematika interaktif berbasis web dengan desain modern untuk melatih kecep
 
 ---
 
-## 👨‍💻 Dibuat Oleh
+## 👩🏻‍💻 Dibuat Oleh
 * **Nama:** Putri Wulandari
 * **Sekolah:** SMKN 1 PEDAN
 * **Jurusan:** PPLG 
