@@ -1,4 +1,4 @@
-📎 [Klik di sini untuk mencoba Game](https://putriwulandari27.github.io/simple-math-game-js/math_game2_JS.html)
+📎 [Klik di sini untuk mencoba Game](https://putriwulandari27.github.io/simple-math-game-js/)
 
 
 # 🎮 Math Adventure - Simple Math Game
