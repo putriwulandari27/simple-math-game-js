@@ -1,5 +1,5 @@
-# 🖇️ Klik link dibawah ini untuk mencoba 
-math_game2_JS.html
+📎 [Klik di sini untuk mencoba Game](https://putriwulandari27.github.io/simple-math-game-js/math_game2_JS.html)
+
 
 # 🎮 Math Adventure - Simple Math Game
 
