@@ -1,3 +1,6 @@
+# 🖇️ Klik link dibawah ini untuk mencoba 
+math_game2_JS.html
+
 # 🎮 Math Adventure - Simple Math Game
 
 Game matematika interaktif berbasis web dengan desain modern untuk melatih kecepatan berhitung (penjumlahan, pengurangan, dan perkalian).
